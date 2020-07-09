@@ -28,6 +28,11 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+        <!--Eureka 服务注册中心-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
