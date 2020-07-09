@@ -5,6 +5,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <modules>
     <module>eureka-server</module>
+    <module>third-part-index-data-project</module>
   </modules>
 
   <packaging>pom</packaging>
