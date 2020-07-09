@@ -39,7 +39,7 @@ public class IndexService {
     //保存数据
     @Cacheable(key="'all_codes'")
     public List<Index> store(){
-        System.out.println(this);
+        //System.out.println(this);
         return indexes;
     }
 
