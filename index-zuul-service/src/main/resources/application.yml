@@ -13,6 +13,9 @@ zuul:
     api-b:
       path: /api-backtest/**
       serviceId: TREND-TRADING-BACKTEST-SERVICE
+    api-c:
+      path: /api-view/**
+      serviceId: TREND-TRADING-BACKTEST-VIEW
 hystrix:
   command:
     default:
