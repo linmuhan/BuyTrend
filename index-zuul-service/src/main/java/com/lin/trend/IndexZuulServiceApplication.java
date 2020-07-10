@@ -14,7 +14,7 @@ import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 public class IndexZuulServiceApplication {
     //  http://127.0.0.1:8031/api-codes/codes
     public static void main(String[] args) {
-        int port = 8032;
+        int port = 8031;
         if(!NetUtil.isUsableLocalPort(port)) {
             System.err.printf("端口%d被占用了，无法启动%n", port );
             System.exit(1);
