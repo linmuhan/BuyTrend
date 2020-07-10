@@ -12,6 +12,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.DataInputStream;
+import java.io.FilterInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
