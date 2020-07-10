@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header::html('趋势投资模拟回测')" ></head>
+
+<body >
+<script>
+    $(function(){
+        var data4Vue = {
+
+        };
+
+        //ViewModel
+        var vue = new Vue({
+            el: '#workingArea',
+            data: data4Vue,
+            mounted:function(){ //mounted　表示这个 Vue 对象加载成功了
+                this.init();
+            },
+            methods: {
+                init:function(){
+
+                }
+            }
+        });
+    });
+
+</script>
+
+<style>
+    table.inputTable{
+        width:100%;
+    }
+    table.inputTable td{
+        padding:20px 20px;
+    }
+
+    table{
+        margin:20px;
+    }
+
+    div#workingArea{
+        margin:50px;
+    }
+</style>
+
+<div id="workingArea">
+    <span class="label label-info">回测参数</span>
+</div>
+
+<div th:replace="include/footer::html" ></div>
+
+</body>
+</html>

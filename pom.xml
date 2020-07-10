@@ -13,6 +13,7 @@
     <module>trend-trading-backtest-service</module>
     <module>trend-trading-backtest-service</module>
     <module>trend-trading-backtest-service</module>
+    <module>trend-trading-backtest-view</module>
   </modules>
 
   <packaging>pom</packaging>
