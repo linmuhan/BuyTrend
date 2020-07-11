@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="include/header::html('趋势投资模拟回测')" ></head>
-
 <body >
 <script>
+    var chart4Profit = null;
+
     $(function(){
         var data4Vue = {
+            indexes: [],
+            currentIndex: '000300',
 
+            indexDatas:[],
+            dates:[],
+            closePoints:[],
         };
 
         //ViewModel
@@ -15,13 +21,101 @@
             data: data4Vue,
             mounted:function(){ //mounted　表示这个 Vue 对象加载成功了
                 this.init();
+                $("[data-toggle='tooltip']").tooltip();
             },
             methods: {
                 init:function(){
+                    var url =  "http://127.0.0.1:8031/api-codes/codes";
+                    axios.get(url).then(function(response) {
+                        vue.indexes = response.data;
+                        vue.$nextTick(function(){
+                            vue.simulate();
+                        });
+                    });
+                },
+                simulate:function(){
+                    var url =  "http://127.0.0.1:8031/api-backtest/simulate/"+vue.currentIndex;
+                    axios.get(url).then(function(response) {
+                        //清空原数据
+                        vue.indexDatas = [];
+                        vue.dates = [];
+                        vue.closePoints = [];
 
+                        //获取返回数据
+                        vue.indexDatas = response.data.indexDatas;
+                        vue.dates = new Array();
+                        vue.closePoints = new Array();
+                        //指数数据
+                        for(i in vue.indexDatas){
+                            var indexData = vue.indexDatas[i];
+                            vue.dates.push(indexData.date);
+                            vue.closePoints.push(indexData.closePoint);
+                        }
+
+                        //收益图表
+                        chart4Profit.config.data.labels = vue.dates;
+                        chart4Profit.config.data.datasets[0].label = vue.currentIndex;
+                        chart4Profit.config.data.datasets[0].data = vue.closePoints;
+                        chart4Profit.update();
+
+                    });
+                },
+                changeParamWithFlushDate:function(){
+                    vue.simulate();
+                },
+            }
+        });
+
+        var ctx4Profit = $(".canvas4Profit")[0].getContext('2d');
+        chart4Profit = new Chart(ctx4Profit, {
+            type: 'line',
+            data: {
+                labels: '',
+                datasets: [
+                    {
+                        label: '',
+                        data: [],
+                        borderColor: '#FF4040',
+                        backgroundColor: '#FF4040',
+                        borderWidth: 1.2,
+                        pointRadius: 0,
+                        fill: false,
+                        lineTension: 0,
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: '指数趋势投资收益对比图'
+                },
+                responsive: true,
+                responsiveAnimationDuration:3000,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: false,
+                        }
+                    }]
+                },
+                tooltips: {
+                    intersect: false,
+                    mode: 'index',
+// 	   					axis: 'y',
+                    callbacks: {
+                        label: function(tooltipItem, myData) {
+                            var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += parseFloat(tooltipItem.value).toFixed(2);
+                            return label;
+                        }
+                    }
                 }
             }
         });
+
     });
 
 </script>
@@ -45,6 +139,28 @@
 
 <div id="workingArea">
     <span class="label label-info">回测参数</span>
+    <table class="inputTable ">
+        <tr>
+            <td width="25%">
+				<span data-toggle="tooltip" data-placement="top" title="选择某一个指数进行模拟回测">
+					请选择指数:<span class="glyphicon glyphicon-question-sign" > </span>
+				</span>
+            </td>
+            <td width="25%">
+                <select @change="changeParamWithFlushDate" v-model="currentIndex" class="indexSelect form-control">
+                    <option v-for="bean in indexes " :value="bean.code">{{bean.name}} - ( {{bean.code}} )</option>
+                </select>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <div class="label label-warning">收益对比图</div>
+
+    <div  class="div4chart" style="margin:0px auto; width:80%">
+        <canvas class='canvas4Profit'></canvas>
+    </div>
 </div>
 
 <div th:replace="include/footer::html" ></div>
