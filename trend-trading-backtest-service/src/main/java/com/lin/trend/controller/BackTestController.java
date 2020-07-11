@@ -19,10 +19,11 @@ import java.util.*;
 public class BackTestController {
     @Autowired BackTestService backTestService;
 
-    @GetMapping("/simulate/{code}/{startDate}/{endDate}")
+    @GetMapping("/simulate/{code}/{ma}/{startDate}/{endDate}")
     @CrossOrigin
     public Map<String,Object> backTest(
             @PathVariable("code") String code
+            ,@PathVariable("ma") int ma
             ,@PathVariable("startDate") String strStartDate
             ,@PathVariable("endDate") String strEndDate
     ) throws Exception {
@@ -33,7 +34,6 @@ public class BackTestController {
 
         allIndexDatas = filterByDateRange(allIndexDatas,strStartDate, strEndDate);
 
-        int ma = 20;
         float sellRate = 0.95f;
         float buyRate = 1.05f;
         float serviceCharge = 0f;
@@ -46,11 +46,16 @@ public class BackTestController {
         float indexIncomeAnnual = (float) Math.pow(1+indexIncomeTotal, 1/years) - 1;
         float trendIncomeTotal = (profits.get(profits.size()-1).getValue() - profits.get(0).getValue()) / profits.get(0).getValue();
         float trendIncomeAnnual = (float) Math.pow(1+trendIncomeTotal, 1/years) - 1;
+
+        int winCount = (Integer) simulateResult.get("winCount");
+        int lossCount = (Integer) simulateResult.get("lossCount");
+        float avgWinRate = (Float) simulateResult.get("avgWinRate");
+        float avgLossRate = (Float) simulateResult.get("avgLossRate");
+
         List<AnnualProfit> annualProfits = (List<AnnualProfit>) simulateResult.get("annualProfits");
 
         Map<String,Object> result = new HashMap<>();
         result.put("indexDatas", allIndexDatas);
-        result.put("annualProfits", annualProfits);
         result.put("indexStartDate", indexStartDate);
         result.put("indexEndDate", indexEndDate);
         result.put("profits", profits);
@@ -60,6 +65,13 @@ public class BackTestController {
         result.put("indexIncomeAnnual", indexIncomeAnnual);
         result.put("trendIncomeTotal", trendIncomeTotal);
         result.put("trendIncomeAnnual", trendIncomeAnnual);
+
+        result.put("winCount", winCount);
+        result.put("lossCount", lossCount);
+        result.put("avgWinRate", avgWinRate);
+        result.put("avgLossRate", avgLossRate);
+
+        result.put("annualProfits", annualProfits);
 
         return result;
     }

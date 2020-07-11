@@ -42,6 +42,8 @@
             annuals:[],
             indexIncomes:[],
             trendIncomes:[],
+
+            ma:20,
         };
 
         //ViewModel
@@ -63,7 +65,7 @@
                     });
                 },
                 simulate:function(){
-                    var url =  "http://127.0.0.1:8031/api-backtest/simulate/"+vue.currentIndex+"/"+vue.startDate+"/"+vue.endDate+"/";
+                    var url =  "http://127.0.0.1:8031/api-backtest/simulate/"+vue.currentIndex+"/"+vue.ma+"/"+vue.startDate+"/"+vue.endDate+"/";
                     axios.get(url).then(function(response) {
                         //清空原数据
                         vue.indexDatas = [];
@@ -389,6 +391,21 @@
             </td>
             <td width="25%"></td>
             <td width="25%"></td>
+        </tr>
+        <tr>
+            <td>
+            				<span data-toggle="tooltip" data-placement="top" title="MA 即 moving average, 移动均线的意思。 比如MA20就表示20日均线，取最近20天的值的平均数">
+            				MA(均线) :<span class="glyphicon glyphicon-question-sign	" > </span>
+           				</span>
+            </td>
+            <td>
+                <select class="form-control" @change="changeParam" v-model="ma">
+                    <option  value="5">5日</option>
+                    <option  value="10">10日</option>
+                    <option  value="20">20日</option>
+                    <option  value="60">60日</option>
+                </select>
+            </td>
         </tr>
         <tr>
             <td>
