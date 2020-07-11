@@ -13,6 +13,14 @@
             indexDatas:[],
             dates:[],
             closePoints:[],
+
+            flushDate: true,
+
+            indexStartDate: null,
+            indexEndDate: null,
+            startDate: null,
+            endDate: null,
+
         };
 
         //ViewModel
@@ -34,17 +42,23 @@
                     });
                 },
                 simulate:function(){
-                    var url =  "http://127.0.0.1:8031/api-backtest/simulate/"+vue.currentIndex;
+                    var url =  "http://127.0.0.1:8031/api-backtest/simulate/"+vue.currentIndex+"/"+vue.startDate+"/"+vue.endDate+"/";
                     axios.get(url).then(function(response) {
                         //清空原数据
                         vue.indexDatas = [];
-                        vue.dates = [];
                         vue.closePoints = [];
+                        vue.dates = [];
 
                         //获取返回数据
+
                         vue.indexDatas = response.data.indexDatas;
                         vue.dates = new Array();
                         vue.closePoints = new Array();
+
+                        //日期
+                        vue.indexStartDate = response.data.indexStartDate;
+                        vue.indexEndDate = response.data.indexEndDate;
+
                         //指数数据
                         for(i in vue.indexDatas){
                             var indexData = vue.indexDatas[i];
@@ -58,11 +72,94 @@
                         chart4Profit.config.data.datasets[0].data = vue.closePoints;
                         chart4Profit.update();
 
+                        if(vue.flushDate)
+                            vue.updateDate();
+
                     });
                 },
-                changeParamWithFlushDate:function(){
+                changeParam:function(){
+                    vue.flushDate = false;
                     vue.simulate();
                 },
+                changeParamWithFlushDate:function(){
+                    vue.flushDate = true;
+                    vue.startDate = null;
+                    vue.endDate = null;
+                    vue.simulate();
+                },
+                updateDate:function(){
+                    vue.startDate = vue.indexStartDate;
+                    vue.endDate = vue.indexEndDate;
+
+                    console.log("vue.indexStartDate："+vue.indexStartDate);
+
+                    //需要先destroy，否则后续新的日期范围如果超出了前面的日期范围，会出冲突
+                    $('#date4Start').datepicker("destroy");
+                    $('#date4Start').datepicker({
+                        "format": 'yyyy-mm-dd',
+                        "language": "zh-CN",
+                        autoclose: true,
+                        startDate: vue.indexStartDate,
+                        endDate: vue.indexEndDate,
+                    }).on("changeDate",function(e){
+                        var month = (e.date.getMonth()+1);
+                        if(month <10)
+                            month = '0'+month;
+                        var day = (e.date.getDate());
+                        if(day <10)
+                            day = '0'+day;
+                        vue.startDate = e.date.getFullYear()+"-"+month+"-"+day;
+
+                        if(!vue.checkDateRange()){
+                            $('#date4Start').datepicker('update', vue.indexStartDate);
+                            return;
+                        }
+
+                        vue.changeParam();
+                    });
+
+                    $('#date4End').datepicker("destroy");
+                    $('#date4End').datepicker({
+                        "format": 'yyyy-mm-dd',
+                        "language": "zh-CN",
+                        autoclose: true,
+                        startDate: vue.indexStartDate,
+                        endDate: vue.indexEndDate,
+                    }).on("changeDate",function(e){
+                        var month = (e.date.getMonth()+1);
+                        if(month <10)
+                            month = '0'+month;
+                        var day = (e.date.getDate());
+                        if(day <10)
+                            day = '0'+day;
+                        vue.endDate = e.date.getFullYear()+"-"+month+"-"+day;
+                        if(!vue.checkDateRange()){
+                            $('#date4End').datepicker('update', vue.indexEndDate);
+                            return;
+                        }
+
+                        vue.changeParam();
+
+                    });
+
+                    $('#date4Start').datepicker('update', vue.indexStartDate);
+                    $('#date4End').datepicker('update', vue.indexEndDate);
+                },
+                checkDateRange:function(){
+                    if(null==vue.startDate || null==vue.endDate)
+                        return true;
+
+                    var strStartDate = vue.startDate.replace(/-/g, '/')
+                    var startTime = new Date(strStartDate).getTime();
+                    var strEndDate = vue.endDate.replace(/-/g, '/')
+                    var endTime = new Date(strEndDate).getTime();
+                    if(startTime>endTime){
+                        alert("开始日期不能大于日期！");
+                        return false;
+                    }
+                    return true;
+
+                }
             }
         });
 
@@ -151,8 +248,35 @@
                     <option v-for="bean in indexes " :value="bean.code">{{bean.name}} - ( {{bean.code}} )</option>
                 </select>
             </td>
-            <td></td>
-            <td></td>
+            <td width="25%"></td>
+            <td width="25%"></td>
+        </tr>
+        <tr>
+            <td>
+           				<span data-toggle="tooltip" data-placement="top" title="指定模拟回测的开始日期，默认是当前指数最开始的日期">
+            				开始日期:<span class="glyphicon glyphicon-question-sign	" > </span>
+           				</span>
+            </td>
+            <td>
+                <div class="form-group">
+                    <div class="input-group date" id="date4Start">
+                        <input  type="text" readOnly="readOnly" class="form-control"  ><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+                </div>
+            </td>
+            <td>
+           				<span data-toggle="tooltip" data-placement="top" title="指定模拟回测的结束日期，默认是当前指数最后的日期">
+            				结束日期:<span class="glyphicon glyphicon-question-sign	" > </span>
+           				</span>
+            </td>
+            <td>
+                <div class="form-group">
+                    <div class="input-group date" id="date4End">
+                        <input type="text" readOnly="readOnly" class="form-control"  ><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+                </div>
+            </td>
+
         </tr>
     </table>
 
