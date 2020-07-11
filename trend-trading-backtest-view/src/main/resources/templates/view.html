@@ -4,6 +4,7 @@
 <body >
 <script>
     var chart4Profit = null;
+    var chart4AnnualIncome = null;
 
     $(function(){
         var data4Vue = {
@@ -31,6 +32,16 @@
             indexIncomeAnnual:0,
             trendIncomeTotal:0,
             trendIncomeAnnual:0,
+
+            winCount:0,
+            lossCount:0,
+            avgWinRate:0,
+            avgLossRate:0,
+
+            annualProfits: [],
+            annuals:[],
+            indexIncomes:[],
+            trendIncomes:[],
         };
 
         //ViewModel
@@ -61,6 +72,10 @@
                         vue.profits = [];
                         vue.profitValues =[];
                         vue.trades = [];
+                        vue.annualProfits = [];
+                        vue.annuals = [];
+                        vue.indexIncomes = [];
+                        vue.trendIncomes = [];
 
                         //获取返回数据
 
@@ -85,6 +100,15 @@
                         vue.trendIncomeTotal = response.data.trendIncomeTotal;
                         vue.trendIncomeAnnual = response.data.trendIncomeAnnual;
 
+                        //交易统计
+                        vue.winCount = response.data.winCount;
+                        vue.lossCount = response.data.lossCount;
+                        vue.avgWinRate = response.data.avgWinRate;
+                        vue.avgLossRate = response.data.avgLossRate;
+
+                        //每年收益
+                        vue.annualProfits = response.data.annualProfits;
+
                         //指数数据
                         for(i in vue.indexDatas){
                             var indexData = vue.indexDatas[i];
@@ -95,12 +119,24 @@
                             vue.profitValues.push(profit.value);
                         }
 
+                        for(i in vue.annualProfits){
+                            vue.annuals.push(vue.annualProfits[i].year);
+                            vue.indexIncomes.push(vue.annualProfits[i].indexIncome*100);
+                            vue.trendIncomes.push(vue.annualProfits[i].trendIncome*100);
+                        }
+
                         //收益图表
                         chart4Profit.config.data.labels = vue.dates;
                         chart4Profit.config.data.datasets[0].label = vue.currentIndex;
                         chart4Profit.config.data.datasets[0].data = vue.closePoints;
                         chart4Profit.config.data.datasets[1].data = vue.profitValues;
                         chart4Profit.update();
+
+                        chart4AnnualIncome.config.data.labels = vue.annuals;
+                        chart4AnnualIncome.config.data.datasets[0].label = vue.currentIndex;
+                        chart4AnnualIncome.config.data.datasets[0].data = vue.indexIncomes;
+                        chart4AnnualIncome.config.data.datasets[1].data = vue.trendIncomes;
+                        chart4AnnualIncome.update();
 
                         if(vue.flushDate)
                             vue.updateDate();
@@ -253,6 +289,69 @@
             }
         });
 
+        var ctx4AnnualIncome = $(".canvas4AnnualIncome")[0].getContext('2d');
+        chart4AnnualIncome = new Chart(ctx4AnnualIncome, {
+            type: 'bar',
+            data: {
+                labels: '',
+                datasets: [
+                    {
+                        label: '',
+                        data: [],
+                        borderColor: '#FF4040',
+                        backgroundColor: '#FF4040',
+                        borderWidth: 1,
+                        pointRadius: 0,
+                        fill: false,
+                        lineTension: 0,
+                    },
+                    {
+                        label: '趋势投资',
+                        data: [],
+                        borderColor: '#5D98C8',
+                        backgroundColor: '#5D98C8',
+                        borderWidth: 1,
+                        pointRadius: 0,
+                        fill: false,
+                        lineTension: 0,
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: '指数/趋势收益分布对比图'
+                },
+                responsive: true,
+                responsiveAnimationDuration:3000,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+//         						suggestedMin: -10,
+//     							suggestedMax: 200,
+                        }
+                    }]
+                },
+                tooltips: {
+                    intersect: false,
+                    mode: 'index',
+
+                    callbacks: {
+                        label: function(tooltipItem, myData) {
+                            var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += parseFloat(tooltipItem.value).toFixed(2);
+                            label += "%";
+                            return label;
+                        }
+                    }
+                }
+            }
+        });
+
     });
 
 </script>
@@ -363,6 +462,70 @@
         </tbody>
 
     </table>
+
+    <div class="label label-warning">交易统计</div>
+    <table class="table table-bordered table-condensed" >
+        <thead>
+        <th align="center" colspan="2">趋势投资盈亏统计</th>
+        </thead>
+        <tbody>
+        <tr>
+            <td width="50%">总共交易次数</td>
+            <td>{{winCount+lossCount}}</td>
+        </tr>
+        <tr>
+            <td>盈利交易次数</td>
+            <td>{{winCount}}</td>
+        </tr>
+        <tr>
+            <td>平均盈利比率</td>
+            <td>{{avgWinRate*100|formatNumberFilter(2)}}%</td>
+        </tr>
+        <tr>
+            <td>亏损交易次数</td>
+            <td>{{lossCount}}</td>
+        </tr>
+        <tr>
+            <td>平均亏损比率</td>
+            <td>{{avgLossRate*100|formatNumberFilter(2)}}%</td>
+        </tr>
+        <tr>
+            <td>胜率</td>
+            <td>{{(winCount/(winCount+lossCount))*100|formatNumberFilter(2)}}%	</td>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <div class="label label-warning">收益分布对比表</div>
+
+    <table class="table table-striped table-bordered table-condensed" >
+        <thead>
+        <th>年份</th>
+        <th>指数收益</th>
+        <th>趋势投资收益</th>
+        </thead>
+        <tbody>
+        <tr v-for="bean in annualProfits">
+            <td>
+                {{bean.year}}
+            </td>
+            <td>
+                {{bean.indexIncome*100|formatNumberFilter(2)}}%
+            </td>
+            <td>
+                {{bean.trendIncome*100|formatNumberFilter(2)}}%
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+
+    <div class="label label-warning">收益分布对比图</div>
+
+    <div  class="div4chart" style="margin:0px auto; width:80%">
+        <canvas class='canvas4AnnualIncome'></canvas>
+    </div>
 
     <div class="label label-warning">交易明细</div>
 

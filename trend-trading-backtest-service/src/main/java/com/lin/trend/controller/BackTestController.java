@@ -1,5 +1,6 @@
 package com.lin.trend.controller;
 
+import com.lin.trend.pojo.AnnualProfit;
 import com.lin.trend.pojo.IndexData;
 import com.lin.trend.pojo.Profit;
 import com.lin.trend.pojo.Trade;
@@ -45,9 +46,11 @@ public class BackTestController {
         float indexIncomeAnnual = (float) Math.pow(1+indexIncomeTotal, 1/years) - 1;
         float trendIncomeTotal = (profits.get(profits.size()-1).getValue() - profits.get(0).getValue()) / profits.get(0).getValue();
         float trendIncomeAnnual = (float) Math.pow(1+trendIncomeTotal, 1/years) - 1;
+        List<AnnualProfit> annualProfits = (List<AnnualProfit>) simulateResult.get("annualProfits");
 
         Map<String,Object> result = new HashMap<>();
         result.put("indexDatas", allIndexDatas);
+        result.put("annualProfits", annualProfits);
         result.put("indexStartDate", indexStartDate);
         result.put("indexEndDate", indexEndDate);
         result.put("profits", profits);
