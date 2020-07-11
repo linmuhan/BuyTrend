@@ -5,3 +5,5 @@ eureka:
 spring:
   application:
     name: index-data-service
+  zipkin:
+    base-url: http://localhost:9411
