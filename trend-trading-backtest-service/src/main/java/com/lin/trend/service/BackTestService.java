@@ -1,5 +1,7 @@
 package com.lin.trend.service;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import com.lin.trend.client.IndexDataClient;
 import com.lin.trend.pojo.IndexData;
 import com.lin.trend.pojo.Profit;
@@ -139,6 +141,17 @@ public class BackTestService {
         }
         avg = sum / (now - start);
         return avg;
+    }
+
+    public float getYear(List<IndexData> allIndexDatas) {
+        float years;
+        String sDateStart = allIndexDatas.get(0).getDate();
+        String sDateEnd = allIndexDatas.get(allIndexDatas.size()-1).getDate();
+        Date dateStart = DateUtil.parse(sDateStart);
+        Date dateEnd = DateUtil.parse(sDateEnd);
+        long days = DateUtil.between(dateStart, dateEnd, DateUnit.DAY);
+        years = days/365f;
+        return years;
     }
 
 }
