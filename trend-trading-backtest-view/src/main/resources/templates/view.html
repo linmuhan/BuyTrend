@@ -44,6 +44,12 @@
             trendIncomes:[],
 
             ma:20,
+
+            buyThreshold:1.01,
+            sellThreshold:0.99,
+
+            serviceCharge:0.0,
+
         };
 
         //ViewModel
@@ -65,7 +71,7 @@
                     });
                 },
                 simulate:function(){
-                    var url =  "http://127.0.0.1:8031/api-backtest/simulate/"+vue.currentIndex+"/"+vue.ma+"/"+vue.startDate+"/"+vue.endDate+"/";
+                    var url =  "http://127.0.0.1:8031/api-backtest/simulate/"+vue.currentIndex+"/"+vue.ma+"/"+vue.buyThreshold+"/"+vue.sellThreshold+"/" +vue.serviceCharge +"/"+vue.startDate+"/"+vue.endDate+"/";
                     axios.get(url).then(function(response) {
                         //清空原数据
                         vue.indexDatas = [];
@@ -404,6 +410,47 @@
                     <option  value="10">10日</option>
                     <option  value="20">20日</option>
                     <option  value="60">60日</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+           				<span data-toggle="tooltip" data-placement="top" title="当前值大于均线，说明上升趋势来了，就可以购买，或者再稍等等，比均线多 5% 再下手，那么购买阈值就是 1.05 ">
+            				购买阈值:<span class="glyphicon glyphicon-question-sign	" > </span>
+           				</span>
+
+            </td>
+            <td>
+                <select class="form-control" @change="changeParam" v-model="buyThreshold">
+                    <option  v-for="i in 9" :value="i/100+1">{{i/100+1|formatNumberFilter(2)}}</option>
+                </select>
+            </td>
+            <td>
+
+           				<span data-toggle="tooltip" data-placement="top" title="当前值低于均线，说明下跌趋势来了，就可以出售，或者再稍等等，比最近的高点低 5%，那么购买阈值就是 0.95">
+            				出售阈值:<span class="glyphicon glyphicon-question-sign	" > </span>
+           				</span>
+
+            </td>
+            <td>
+
+                <select class="form-control" @change="changeParam"  v-model="sellThreshold">
+                    <option v-for="i in 10" :value="1-i/100">{{1-i/100|formatNumberFilter(2)}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+           				<span data-toggle="tooltip" data-placement="top" title="每一笔交易都会有手续费，一般说来手续费都不高，千分之 1.5 的左右，默认是没有计算手续费的">
+            				手续费:<span class="glyphicon glyphicon-question-sign	" > </span>
+           				</span>
+            </td>
+            <td>
+                <select class="form-control" @change="changeParam"  v-model="serviceCharge">
+                    <option value="0">无</option>
+                    <option value="0.001">0.1%</option>
+                    <option value="0.0015">0.15%</option>
+                    <option value="0.002">0.2%</option>
                 </select>
             </td>
         </tr>
