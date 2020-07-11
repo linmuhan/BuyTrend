@@ -3,6 +3,7 @@ package com.lin.trend.service;
 import com.lin.trend.client.IndexDataClient;
 import com.lin.trend.pojo.IndexData;
 import com.lin.trend.pojo.Profit;
+import com.lin.trend.pojo.Trade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,9 @@ public class BackTestService {
         List<IndexData> result = indexDataClient.getIndexData(code);
         Collections.reverse(result);
          
-        for (IndexData indexData : result) {
-            System.out.println(indexData.getDate());
-        }
+//        for (IndexData indexData : result) {
+//            System.out.println(indexData.getDate());
+//        }
          
         return result;
     }
@@ -26,6 +27,8 @@ public class BackTestService {
     public Map<String,Object> simulate(int ma, float sellRate, float buyRate, float serviceCharge, List<IndexData> indexDatas)  {
 
         List<Profit> profits =new ArrayList<>();
+        List<Trade> trades = new ArrayList<>();
+
         float initCash = 1000;
         float cash = initCash;
         float share = 0;
@@ -51,6 +54,13 @@ public class BackTestService {
                     if(0 == share) {
                         share = cash / closePoint;
                         cash = 0;
+
+                        Trade trade = new Trade();
+                        trade.setBuyDate(indexData.getDate());
+                        trade.setBuyClosePoint(indexData.getClosePoint());
+                        trade.setSellDate("n/a");
+                        trade.setSellClosePoint(0);
+                        trades.add(trade);
                     }
                 }
                 //sell 低于了卖点
@@ -59,6 +69,13 @@ public class BackTestService {
                     if(0!= share){
                         cash = closePoint * share * (1-serviceCharge);
                         share = 0;
+
+                        Trade trade =trades.get(trades.size()-1);
+                        trade.setSellDate(indexData.getDate());
+                        trade.setSellClosePoint(indexData.getClosePoint());
+
+                        float rate = cash / initCash;
+                        trade.setRate(rate);
                     }
                 }
                 //do nothing
@@ -79,12 +96,12 @@ public class BackTestService {
             profit.setDate(indexData.getDate());
             profit.setValue(rate*init);
 
-            System.out.println("profit.value:" + profit.getValue());
             profits.add(profit);
 
         }
         Map<String,Object> map = new HashMap<>();
         map.put("profits", profits);
+        map.put("trades", trades);
         return map;
     }
 
