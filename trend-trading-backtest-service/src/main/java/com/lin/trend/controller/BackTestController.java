@@ -1,6 +1,7 @@
 package com.lin.trend.controller;
 
 import com.lin.trend.pojo.IndexData;
+import com.lin.trend.pojo.Profit;
 import com.lin.trend.service.BackTestService;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -30,11 +31,18 @@ public class BackTestController {
 
         allIndexDatas = filterByDateRange(allIndexDatas,strStartDate, strEndDate);
 
+        int ma = 20;
+        float sellRate = 0.95f;
+        float buyRate = 1.05f;
+        float serviceCharge = 0f;
+        Map<String,?> simulateResult= backTestService.simulate(ma,sellRate, buyRate,serviceCharge, allIndexDatas);
+        List<Profit> profits = (List<Profit>) simulateResult.get("profits");
+
         Map<String,Object> result = new HashMap<>();
         result.put("indexDatas", allIndexDatas);
         result.put("indexStartDate", indexStartDate);
         result.put("indexEndDate", indexEndDate);
-
+        result.put("profits", profits);
         return result;
     }
 
