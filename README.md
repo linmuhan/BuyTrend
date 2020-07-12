@@ -1,6 +1,6 @@
 # BuyTrend
 
-### 介绍
+###介绍
 
 通过趋势投资来进去对指数的的分析投资，达到收益的效果。
 
@@ -32,9 +32,9 @@
 
 结构图如下：图中没点亮的是还没有进行开发的服务
 
-![](https://upload-images.jianshu.io/upload_images/22691891-85fdc5d5c099587b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://gitee.com/CryFace/BuyTrend/raw/master/doc/22691891-85fdc5d5c099587b.png)
 
-关于服务模块的介绍： 
+关于服务模块的介绍：
 
 #### eureka-server
 
@@ -68,16 +68,17 @@
 
 （这里我们以选取一只指数来展示具体的图表分析展示）
 
-![](https://upload-images.jianshu.io/upload_images/22691891-83cb121b8d6507ae.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://gitee.com/CryFace/BuyTrend/raw/master/doc/22691891-83cb121b8d6507ae.png)
 
-![](https://upload-images.jianshu.io/upload_images/22691891-0b4d8bb08cd036b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://gitee.com/CryFace/BuyTrend/raw/master/doc/22691891-0b4d8bb08cd036b0.png)
 
-![](https://upload-images.jianshu.io/upload_images/22691891-fa004027370e5405.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://gitee.com/CryFace/BuyTrend/raw/master/doc/22691891-fa004027370e5405.png)
 
-![](https://upload-images.jianshu.io/upload_images/22691891-66566a3058b24b8d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://gitee.com/CryFace/BuyTrend/raw/master/doc/22691891-66566a3058b24b8d.png)
 
-![](https://upload-images.jianshu.io/upload_images/22691891-597938ebf0a42b1d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://gitee.com/CryFace/BuyTrend/raw/master/doc/22691891-597938ebf0a42b1d.png)
 
-![](https://upload-images.jianshu.io/upload_images/22691891-522925ed03ab57fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](https://gitee.com/CryFace/BuyTrend/raw/master/doc/22691891-522925ed03ab57fe.png)
 
 (....交易明细截图一部分展示)
+
