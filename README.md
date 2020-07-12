@@ -34,7 +34,7 @@
 
 ![](https://upload-images.jianshu.io/upload_images/22691891-85fdc5d5c099587b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-关于服务模块的介绍：
+关于服务模块的介绍： 
 
 #### eureka-server
 
